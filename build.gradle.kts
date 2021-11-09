@@ -10,11 +10,9 @@ repositories {
 }
 
 dependencies {
-    // shaded
-
     // compile time
-    implementation("com.jsoniter:jsoniter:0.9.23")
-    implementation("com.github.ben-manes.caffeine:caffeine:3.0.4")
+    compileOnly("com.jsoniter:jsoniter:0.9.23")
+    compileOnly("com.github.ben-manes.caffeine:caffeine:3.0.4")
 
     // test
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.7.0")
