@@ -43,6 +43,8 @@ public final class PatternResolver extends Resolver<PatternResolver.Wrapper> {
   }
 
   /**
+   * @param startDelimiter {@link Character} the start delimiter to be set for this parser.
+   * @param endDelimiter {@link Character} the end delimiter to be set for this parser.
    * @see Placeholder.Resolver#Resolver(char, char)
    **/
   public PatternResolver(char startDelimiter, char endDelimiter) {

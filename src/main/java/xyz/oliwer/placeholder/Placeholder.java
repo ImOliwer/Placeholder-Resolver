@@ -31,7 +31,7 @@ public interface Placeholder {
    * This abstract class represents the base of every {@link Placeholder} parser.
    *
    * @see PatternResolver
-   * @param <A> type of {@link Placeholder}.
+   * @param <P> type of {@link Placeholder} wrapper.
    * @author Oliwer - https://www.github.com/ImOliwer
    */
   abstract class Resolver<P extends Wrapper> {
@@ -41,7 +41,7 @@ public interface Placeholder {
     /** {@link Character} end delimiter for this parser. **/
     public final char endDelimiter;
 
-    /** {@link Set<A>} set of registered actions. **/
+    /** {@link Set} set of registered placeholders. **/
     protected final Set<P> placeholders = new HashSet<>();
 
     /**
@@ -71,14 +71,14 @@ public interface Placeholder {
     /**
      * Resolve the actions inside the origin passed.
      *
-     * @param origin {@link String} the string to be processed & resolved.
+     * @param origin {@link String} the string to be processed and resolved.
      * @return {@link String}
      */
     public abstract String resolve(String origin);
   }
 
   /**
-   * Parse this action from origin & parameters accordingly.
+   * Parse this action from origin and parameters accordingly.
    *
    * @param origin {@link String} the origin of this action (i.e `%action(first_param,second_param)%`).
    * @param parameters {@link String} array of parameters provided in the action invocation.

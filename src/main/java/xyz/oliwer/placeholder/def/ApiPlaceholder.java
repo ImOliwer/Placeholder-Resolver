@@ -26,8 +26,7 @@ import static java.util.regex.Pattern.compile;
 
 /**
  * This class represents the "API" implementation of {@link Placeholder}.
- * <br/>
- * Fetch <b>JSON</b> properties from an <b>Endpoint</b> by passed link & target (if any).
+ * Fetch <b>JSON</b> properties from an <b>Endpoint</b> by passed link and target (if any).
  *
  * @author Oliwer - https://www.github.com/ImOliwer
  */
@@ -56,7 +55,7 @@ public final class ApiPlaceholder implements Placeholder {
   /**
    * Primary constructor.
    *
-   * @param jsonParser {@link JsonParser} parser used to serialize & deserialize json content.
+   * @param jsonParser {@link JsonParser} parser used to serialize and deserialize json content.
    */
   public ApiPlaceholder(JsonParser jsonParser) {
     this.json = jsonParser;
