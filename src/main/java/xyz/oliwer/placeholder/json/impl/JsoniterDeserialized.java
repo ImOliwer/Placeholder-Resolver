@@ -19,24 +19,24 @@ public final class JsoniterDeserialized implements Deserialized {
   }
 
   @Override
-  public Deserialized get(int index) {
+  public synchronized Deserialized get(int index) {
     this.content = content.get(index);
     return this;
   }
 
   @Override
-  public Deserialized get(String key) {
+  public synchronized Deserialized get(String key) {
     this.content = content.get(key);
     return this;
   }
 
   @Override
-  public Deserialized copy() {
+  public synchronized Deserialized copy() {
     return new JsoniterDeserialized(this.content);
   }
 
   @Override
-  public String toString() {
+  public synchronized String toString() {
     return content.toString();
   }
 }
