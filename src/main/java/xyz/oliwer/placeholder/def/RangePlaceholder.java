@@ -1,6 +1,7 @@
 package xyz.oliwer.placeholder.def;
 
 import xyz.oliwer.placeholder.Placeholder;
+import xyz.oliwer.placeholder.data.DefaultData;
 
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -14,9 +15,14 @@ import static java.lang.String.format;
  * @author Oliwer - https://www.github.com/ImOliwer
  */
 public final class RangePlaceholder implements Placeholder {
-  /** @see Placeholder#parse(String, String[], char, char) **/
+  /** @see Placeholder#parse(Object, DefaultData) **/
   @Override
-  public Object parse(String origin, String[] parameters, char $1, char $2) {
+  public Object parse(Object $, DefaultData defaultData) {
+    // necessities
+    final String origin = defaultData.origin;
+    final String[] parameters = defaultData.parameters;
+
+    // work
     try {
       final int length = parameters.length;
       if (length == 0 || length == 1)

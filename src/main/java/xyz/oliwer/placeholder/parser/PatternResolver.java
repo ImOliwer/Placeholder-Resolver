@@ -1,7 +1,9 @@
 package xyz.oliwer.placeholder.parser;
 
 import xyz.oliwer.placeholder.Placeholder;
+import xyz.oliwer.placeholder.data.DefaultData;
 
+import java.util.Collection;
 import java.util.regex.Pattern;
 
 import static java.lang.String.format;
@@ -59,31 +61,68 @@ public final class PatternResolver extends Resolver<PatternResolver.Wrapper> {
    * @see Placeholder.Resolver#withPlaceholder(Placeholder)
    */
   @Override
-  public Resolver<Wrapper> withPlaceholder(Placeholder placeholder) {
-    this.placeholders.add(new Wrapper(placeholder, startDelimiter, endDelimiter));
+  public <P extends Placeholder> Resolver<Wrapper> withPlaceholder(P placeholder) {
+    this.placeholders.putIfAbsent(
+      placeholder.getClass(),
+      new Wrapper(placeholder, startDelimiter, endDelimiter)
+    );
     return this;
   }
 
   /**
-   * @see Placeholder.Resolver#resolve(String)
+   * @see Placeholder.Resolver#resolve(String, Object)
    **/
   @Override
-  public String resolve(String origin) {
-    for (final Wrapper placeholder : this.placeholders) {
-      final Placeholder parent = placeholder.getParent();
-      origin = placeholder
-        .pattern
-        .matcher(origin)
-        .replaceAll(result ->
-          parent.parse(
+  public String resolve(String origin, Object customData) {
+    final Collection<Wrapper> values = placeholders.values();
+    for (final Wrapper wrapper : values)
+      origin = this.handle(wrapper, origin, customData);
+    return origin;
+  }
+
+  /**
+   * @see Resolver#resolve(String, Object, Class[])
+   */
+  @Override
+  public String resolve(String origin, Object customData, Class<? extends Placeholder>[] types) {
+    // ensure the presence
+    if (types == null || origin == null)
+      throw new NullPointerException("types and origin must NOT be null");
+
+    // loop over and handle the parse
+    for (final Class<? extends Placeholder> type : types)
+      origin = this.handle(placeholders.get(type), origin, customData);
+
+    // return the processed origin
+    return origin;
+  }
+
+  /**
+   * Handle the replacement of a placeholder by wrapper, origin and custom data.
+   */
+  private String handle(Wrapper wrapper, String origin, Object customData) {
+    // ensure the presence of our wrapper
+    if (wrapper == null)
+      return origin;
+
+    // necessity
+    final Placeholder parent = wrapper.parent;
+
+    // parse
+    return wrapper
+      .pattern
+      .matcher(origin)
+      .replaceAll(result ->
+        parent.parse(
+          customData,
+          new DefaultData(
             result.group(0),
             result.group(2).split(valueOf(parent.separator())),
-            startDelimiter,
-            endDelimiter
-          ).toString()
-        );
-    }
-    return origin;
+            this.startDelimiter,
+            this.endDelimiter
+          )
+        ).toString()
+      );
   }
 
   /**

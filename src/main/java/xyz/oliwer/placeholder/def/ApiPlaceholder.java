@@ -3,6 +3,7 @@ package xyz.oliwer.placeholder.def;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import xyz.oliwer.placeholder.Placeholder;
+import xyz.oliwer.placeholder.data.DefaultData;
 import xyz.oliwer.placeholder.json.Deserialized;
 import xyz.oliwer.placeholder.json.JsonParser;
 
@@ -61,14 +62,16 @@ public final class ApiPlaceholder implements Placeholder {
     this.json = jsonParser;
   }
 
-  /** @see Placeholder#parse(String, String[], char, char)  **/
+  /** @see Placeholder#parse(Object, DefaultData) **/
   @Override
-  public Object parse(String origin, String[] parameters, char startDelimiter, char endDelimiter) {
+  public Object parse(Object customData, DefaultData defaultData) {
     // necessities
-    final String originCut = cutOrigin(origin, startDelimiter, endDelimiter);
+    final String[] parameters = defaultData.parameters;
+    final String origin = defaultData.origin;
+    final String originCut = cutOrigin(origin, defaultData.startDelimiter, defaultData.endDelimiter);
 
     // check cache
-    final Deserialized cached = cache.getIfPresent(origin);
+    final Deserialized cached = cache.getIfPresent(originCut);
     if (cached != null)
       return extract(originCut, cached.copy(), parameters[1], false);
 
@@ -123,7 +126,7 @@ public final class ApiPlaceholder implements Placeholder {
               request.PUT(bodyPublisher);
               break;
             default:
-              return origin;
+              return defaultData.origin;
           }
         }
       }
@@ -137,7 +140,7 @@ public final class ApiPlaceholder implements Placeholder {
     } catch (Exception ignored) {}
 
     // an exception was caught and has relinquished the url - return the origin
-    return origin;
+    return defaultData.origin;
   }
 
   /**

@@ -1,9 +1,10 @@
 package xyz.oliwer.placeholder;
 
+import xyz.oliwer.placeholder.data.DefaultData;
 import xyz.oliwer.placeholder.parser.PatternResolver;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * This interface represents the base of every placeholder.
@@ -34,15 +35,15 @@ public interface Placeholder {
    * @param <P> type of {@link Placeholder} wrapper.
    * @author Oliwer - https://www.github.com/ImOliwer
    */
-  abstract class Resolver<P extends Wrapper> {
+  abstract class Resolver<W extends Wrapper> {
     /** {@link Character} start delimiter for this parser. **/
     public final char startDelimiter;
 
     /** {@link Character} end delimiter for this parser. **/
     public final char endDelimiter;
 
-    /** {@link Set} set of registered placeholders. **/
-    protected final Set<P> placeholders = new HashSet<>();
+    /** {@link Map} map of registered placeholders. **/
+    protected final Map<Class<? extends Placeholder>, W> placeholders = new ConcurrentHashMap<>();
 
     /**
      * Primary constructor.
@@ -66,27 +67,54 @@ public interface Placeholder {
      * @param placeholder {@link Placeholder} placeholder to be registered.
      * @return {@link Resolver} current instance.
      */
-    public abstract Resolver<P> withPlaceholder(Placeholder placeholder);
+    public abstract <P extends Placeholder> Resolver<W> withPlaceholder(P placeholder);
 
     /**
-     * Resolve the actions inside the origin passed.
+     * Resolve the placeholders inside the origin passed.
      *
      * @param origin {@link String} the string to be processed and resolved.
+     * @param customData {@link Object} the custom data for this resolve operation.
      * @return {@link String}
      */
-    public abstract String resolve(String origin);
+    public abstract String resolve(String origin, Object customData);
+
+    /**
+     * @param origin {@link String} the string to be processed and resolved.
+     * @see Resolver#resolve(String, Object)
+     */
+    public final String resolve(String origin) {
+      return this.resolve(origin, (Object) null);
+    }
+
+    /**
+     * Resolve an array of placeholders of passed classes in a string origin.
+     *
+     * @param origin {@link String} the origin to be processed of passed placeholder.
+     * @param customData {@link Object} custom data passed through to the placeholder.
+     * @param types {@link Class} array of placeholder types to be processed.
+     * @return {@link String}
+     */
+    public abstract String resolve(String origin, Object customData, Class<? extends Placeholder>[] types);
+
+    /**
+     * @param origin {@link String} the origin to be processed of passed placeholder.
+     * @param types {@link Class} array of placeholder types to be processed.
+     * @see Resolver#resolve(String, Object, Class[])
+     * @return {@link String}
+     */
+    public final String resolve(String origin, Class<? extends Placeholder>[] types) {
+      return this.resolve(origin, null, types);
+    }
   }
 
   /**
    * Parse this action from origin and parameters accordingly.
    *
-   * @param origin {@link String} the origin of this action (i.e `%action(first_param,second_param)%`).
-   * @param parameters {@link String} array of parameters provided in the action invocation.
-   * @param startDelimiter {@link Character} start delimiter of involved parser.
-   * @param endDelimiter {@link Character} end delimiter of involved parser.
+   * @param customData {@link Object} the custom data of this parse.
+   * @param defaultData {@link DefaultData} the default data from the resolver.
    * @return {@link Object} parsed action.
    */
-  Object parse(String origin, String[] parameters, char startDelimiter, char endDelimiter);
+  Object parse(Object customData, DefaultData defaultData);
 
   /**
    * Get the tag of this action.
