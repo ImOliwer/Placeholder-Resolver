@@ -32,7 +32,7 @@ public class ResolverTest {
 
     // response
     final long start = System.nanoTime();
-    final String response = PATTERN_RESOLVER.resolve(query, new Class<?>[]{ ApiPlaceholder.class });
+    final String response = PATTERN_RESOLVER.resolveSingle(query, ApiPlaceholder.class);
     final long end = System.nanoTime();
 
     // result
@@ -46,7 +46,7 @@ public class ResolverTest {
 
     // response
     final long start = System.nanoTime();
-    final String response = PATTERN_RESOLVER.resolve(query, new Class<?>[]{ RangePlaceholder.class });
+    final String response = PATTERN_RESOLVER.resolveSingle(query, RangePlaceholder.class);
     final long end = System.nanoTime();
 
     // result
@@ -60,7 +60,7 @@ public class ResolverTest {
 
     // response
     final long start = System.nanoTime();
-    final String response = PATTERN_RESOLVER.resolve(query, new Class<?>[]{ RandomPlaceholder.class });
+    final String response = PATTERN_RESOLVER.resolveSingle(query, RandomPlaceholder.class);
     final long end = System.nanoTime();
 
     // result
@@ -74,7 +74,7 @@ public class ResolverTest {
 
     // response
     final long start = System.nanoTime();
-    final String response = PATTERN_RESOLVER.resolve(query, new Class<?>[]{ AddressAlivePlaceholder.class });
+    final String response = PATTERN_RESOLVER.resolveSingle(query, AddressAlivePlaceholder.class);
     final long end = System.nanoTime();
 
     // result

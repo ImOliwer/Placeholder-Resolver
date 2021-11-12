@@ -4,6 +4,7 @@ import xyz.oliwer.placeholder.data.DefaultData;
 import xyz.oliwer.placeholder.parser.PatternResolver;
 
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -76,34 +77,74 @@ public interface Placeholder {
      * @param customData {@link Object} the custom data for this resolve operation.
      * @return {@link String}
      */
-    public abstract String resolve(String origin, Object customData);
+    public abstract String resolveAll(String origin, Object customData);
 
     /**
      * @param origin {@link String} the string to be processed and resolved.
-     * @see Resolver#resolve(String, Object)
+     * @see Resolver#resolveAll(String, Object)
      */
-    public final String resolve(String origin) {
-      return this.resolve(origin, (Object) null);
+    public final String resolveAll(String origin) {
+      return this.resolveAll(origin, null);
+    }
+
+    /**
+     * Resolve all placeholders without a set of specific ones.
+     *
+     * @param origin {@link String} the string to be processed and resolved.
+     * @param customData {@link Object} the custom data for this resolve operation.
+     * @param without {@link Set} a collection of classes to ignore.
+     * @return {@link String}
+     */
+    public abstract String resolveAllWithout(String origin, Object customData, Set<Class<? extends Placeholder>> without);
+
+    /**
+     * @param origin {@link String} the string to be processed and resolved.
+     * @param without {@link Set} a collection of classes to ignore.
+     * @see Resolver#resolveAllWithout(String, Object, Set)
+     * @return {@link String}
+     */
+    public final String resolveAllWithout(String origin, Set<Class<? extends Placeholder>> without) {
+      return this.resolveAllWithout(origin, null, without);
     }
 
     /**
      * Resolve an array of placeholders of passed classes in a string origin.
      *
-     * @param origin {@link String} the origin to be processed of passed placeholder.
-     * @param customData {@link Object} custom data passed through to the placeholder.
+     * @param origin {@link String} the origin to be processed of passed placeholders.
+     * @param customData {@link Object} custom data passed through to the placeholders.
      * @param types {@link Class} array of placeholder types to be processed.
      * @return {@link String}
      */
-    public abstract String resolve(String origin, Object customData, Class<? extends Placeholder>[] types);
+    public abstract String resolve(String origin, Object customData, Set<Class<? extends Placeholder>> types);
 
     /**
      * @param origin {@link String} the origin to be processed of passed placeholder.
      * @param types {@link Class} array of placeholder types to be processed.
-     * @see Resolver#resolve(String, Object, Class[])
+     * @see Resolver#resolve(String, Object, Set)
      * @return {@link String}
      */
-    public final String resolve(String origin, Class<? extends Placeholder>[] types) {
+    public final String resolve(String origin, Set<Class<? extends Placeholder>> types) {
       return this.resolve(origin, null, types);
+    }
+
+    /**
+     * Resolve a single type of placeholder by passed class.
+     *
+     * @param origin {@link String} the origin to be processed.
+     * @param customData {@link Object} custom data passed through to the placeholder.
+     * @param type {@link Class} the type of placeholder to process matches in origin.
+     * @return {@link String}
+     */
+    public abstract String resolveSingle(String origin, Object customData, Class<? extends Placeholder> type);
+
+    /**
+     * @param origin {@link String} the origin to be processed.
+     * @param type {@link Class} the type of placeholder to process matches in origin.
+     * @see Resolver#resolveSingle(String, Object, Class)
+     * @return {@link String}
+     */
+    public final String resolveSingle(String origin, Class<? extends Placeholder> type) {
+      return this.resolveSingle(origin, null, type);
     }
   }
 

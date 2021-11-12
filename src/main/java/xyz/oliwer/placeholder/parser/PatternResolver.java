@@ -3,6 +3,8 @@ package xyz.oliwer.placeholder.parser;
 import xyz.oliwer.placeholder.Placeholder;
 import xyz.oliwer.placeholder.data.DefaultData;
 
+import java.util.Map;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 import static java.lang.String.format;
@@ -69,10 +71,10 @@ public final class PatternResolver extends Resolver<PatternResolver.Wrapper> {
   }
 
   /**
-   * @see Placeholder.Resolver#resolve(String, Object)
+   * @see Placeholder.Resolver#resolveAll(String, Object)
    **/
   @Override
-  public String resolve(String origin, Object customData) {
+  public String resolveAll(String origin, Object customData) {
     final var values = placeholders.values();
     for (final Wrapper wrapper : values)
       origin = this.handle(wrapper, origin, customData);
@@ -80,20 +82,45 @@ public final class PatternResolver extends Resolver<PatternResolver.Wrapper> {
   }
 
   /**
-   * @see Resolver#resolve(String, Object, Class[])
+   * @see Resolver#resolveAllWithout(String, Object, Set)
    */
   @Override
-  public String resolve(String origin, Object customData, Class<? extends Placeholder>[] types) {
+  public String resolveAllWithout(String origin, Object customData, Set<Class<? extends Placeholder>> without) {
+    final var entries = placeholders.entrySet();
+    for (Map.Entry<Class<? extends Placeholder>, Wrapper> entry : entries)
+      if (!without.contains(entry.getKey()))
+        origin = this.handle(entry.getValue(), origin, customData);
+    return origin;
+  }
+
+  /**
+   * @see Resolver#resolve(String, Object, Set)
+   */
+  @Override
+  public String resolve(String origin, Object customData, Set<Class<? extends Placeholder>> types) {
     // ensure the presence
     if (types == null || origin == null)
       throw new NullPointerException("types and origin must NOT be null");
 
     // loop over and handle the parse
-    for (final Class<? extends Placeholder> type : types)
+    for (final var type : types)
       origin = this.handle(placeholders.get(type), origin, customData);
 
     // return the processed origin
     return origin;
+  }
+
+  /**
+   * @see Resolver#resolveSingle(String, Object, Class)
+   */
+  @Override
+  public String resolveSingle(String origin, Object customData, Class<? extends Placeholder> type) {
+    // ensure the presence
+    if (type == null || origin == null)
+      throw new NullPointerException("type and origin must NOT be null");
+
+    // process and return
+    return this.handle(placeholders.get(type), origin, customData);
   }
 
   /**
