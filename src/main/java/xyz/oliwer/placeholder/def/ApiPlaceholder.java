@@ -10,15 +10,11 @@ import xyz.oliwer.placeholder.json.JsonParser;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
 import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static java.lang.Integer.parseInt;
 import static java.lang.String.format;
-import static java.net.http.HttpRequest.BodyPublisher;
 import static java.net.http.HttpRequest.BodyPublishers;
 import static java.net.http.HttpResponse.BodyHandlers;
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -66,26 +62,26 @@ public final class ApiPlaceholder implements Placeholder {
   @Override
   public Object parse(Object customData, DefaultData defaultData) {
     // necessities
-    final String[] parameters = defaultData.parameters;
-    final String origin = defaultData.origin;
-    final String originCut = cutOrigin(origin, defaultData.startDelimiter, defaultData.endDelimiter);
+    final var parameters = defaultData.parameters;
+    final var origin = defaultData.origin;
+    final var originCut = cutOrigin(origin, defaultData.startDelimiter, defaultData.endDelimiter);
 
     // check cache
-    final Deserialized cached = cache.getIfPresent(originCut);
+    final var cached = cache.getIfPresent(originCut);
     if (cached != null)
       return extract(originCut, cached.copy(), parameters[1], false);
 
     // handle request
     try {
       // create the client & request
-      final HttpClient client = HttpClient.newHttpClient();
-      final HttpRequest.Builder request = HttpRequest
+      final var client = HttpClient.newHttpClient();
+      final var request = HttpRequest
         .newBuilder(URI.create(parameters[0]));
 
       // prepare request headers
-      final String[] headers = parameters[3].split(";;");
+      final var headers = parameters[3].split(";;");
       for (final String header : headers) {
-        final String[] pair = header.split("=");
+        final var pair = header.split("=");
         if (pair.length < 2)
           continue;
         request.setHeader(pair[0], pair[1]);
@@ -96,7 +92,7 @@ public final class ApiPlaceholder implements Placeholder {
       request.setHeader("Content-Type", "application/json");
 
       // prepare request body
-      final String requestType = parameters[2];
+      final var requestType = parameters[2];
       switch (requestType) {
         case "GET":
           request.GET();
@@ -106,17 +102,17 @@ public final class ApiPlaceholder implements Placeholder {
           break;
         default: {
           // fetch and build the body
-          final Map<String, String> body = new LinkedHashMap<>();
-          final String[] bodyProperties = parameters[4].split(";;");
+          final var body = new LinkedHashMap<>();
+          final var bodyProperties = parameters[4].split(";;");
 
           for (final String bodyProperty : bodyProperties) {
-            final String[] pair = bodyProperty.split("=");
+            final var pair = bodyProperty.split("=");
             if (pair.length < 2)
               continue;
             body.put(pair[0], pair[1]);
           }
 
-          final BodyPublisher bodyPublisher = BodyPublishers.ofString(json.serialize(body));
+          final var bodyPublisher = BodyPublishers.ofString(json.serialize(body));
           // set request type accordingly
           switch (requestType) {
             case "POST":
@@ -126,21 +122,21 @@ public final class ApiPlaceholder implements Placeholder {
               request.PUT(bodyPublisher);
               break;
             default:
-              return defaultData.origin;
+              return origin;
           }
         }
       }
 
       // send request
-      final HttpResponse<String> response = client.send(request.build(), BodyHandlers.ofString(UTF_8));
-      final String responseBody = response.body();
+      final var response = client.send(request.build(), BodyHandlers.ofString(UTF_8));
+      final var responseBody = response.body();
 
       // return value
       return extract(originCut, json.deserialize(responseBody), parameters[1], true);
     } catch (Exception ignored) {}
 
     // an exception was caught and has relinquished the url - return the origin
-    return defaultData.origin;
+    return origin;
   }
 
   /**
@@ -159,8 +155,8 @@ public final class ApiPlaceholder implements Placeholder {
       this.cache.put(origin, next.copy());
 
     // necessity
-    final String[] paths = formattedPaths.split("\\.");
-    final int lastIndex = paths.length - 1;
+    final var paths = formattedPaths.split("\\.");
+    final var lastIndex = paths.length - 1;
     Deserialized value = null;
 
     // return the deserialized value if there is no path
@@ -193,7 +189,7 @@ public final class ApiPlaceholder implements Placeholder {
    * Cut the passed down origin.
    */
   private String cutOrigin(String origin, char startDelimiter, char endDelimiter) {
-    final Matcher matcher = CUT_ORIGIN_PATTERN.matcher(origin);
+    final var matcher = CUT_ORIGIN_PATTERN.matcher(origin);
     if (!matcher.find())
       throw new RuntimeException("failed to match origin");
     return matcher.replaceFirst(

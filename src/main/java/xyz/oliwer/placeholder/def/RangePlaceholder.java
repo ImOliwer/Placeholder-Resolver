@@ -19,37 +19,39 @@ public final class RangePlaceholder implements Placeholder {
   @Override
   public Object parse(Object $, DefaultData defaultData) {
     // necessities
-    final String origin = defaultData.origin;
-    final String[] parameters = defaultData.parameters;
+    final var origin = defaultData.origin;
+    final var parameters = defaultData.parameters;
 
     // work
     try {
-      final int length = parameters.length;
+      final var length = parameters.length;
       if (length == 0 || length == 1)
         return origin;
 
-      final ThreadLocalRandom random = ThreadLocalRandom.current();
-      final String type = parameters[0];
+      final var random = ThreadLocalRandom.current();
+      final var type = parameters[0];
 
       switch (type) {
         // int, long etc
         case "single": {
-          final long minimumValue = parseLong(parameters[1]);
+          final var minimumValue = parseLong(parameters[1]);
           if (length == 2)
             return random.nextLong(minimumValue);
           return random.nextLong(minimumValue, parseLong(parameters[2]));
         }
         // double, float etc
         case "decimal": {
-          final double minimumValue = parseDouble(parameters[1]);
+          final var minimumValue = parseDouble(parameters[1]);
           if (length == 2)
             return random.nextDouble(minimumValue);
 
-          final double value = random.nextDouble(minimumValue, parseDouble(parameters[2]));
+          final var value = random.nextDouble(minimumValue, parseDouble(parameters[2]));
           return length == 4 ? format(format("%%.%sf", parameters[3]), value) : value;
         }
       }
     } catch (NumberFormatException ignored) {}
+
+    // return the (processed?) origin
     return origin;
   }
 

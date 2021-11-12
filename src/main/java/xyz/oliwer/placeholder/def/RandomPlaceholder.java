@@ -14,13 +14,13 @@ public final class RandomPlaceholder implements Placeholder {
   /** @see Placeholder#parse(Object, DefaultData) **/
   @Override
   public Object parse(Object customData, DefaultData defaultData) {
-    final String[] parameters = defaultData.parameters;
-    final int length = parameters.length;
+    final var parameters = defaultData.parameters;
+    final var length = parameters.length;
 
     if (length == 0)
       return defaultData.origin;
 
-    final ThreadLocalRandom random = ThreadLocalRandom.current();
+    final var random = ThreadLocalRandom.current();
     return parameters[random.nextInt(length)];
   }
 

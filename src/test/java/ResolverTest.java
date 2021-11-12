@@ -1,6 +1,7 @@
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
+import xyz.oliwer.placeholder.def.AddressAlivePlaceholder;
 import xyz.oliwer.placeholder.def.ApiPlaceholder;
 import xyz.oliwer.placeholder.def.RandomPlaceholder;
 import xyz.oliwer.placeholder.def.RangePlaceholder;
@@ -18,7 +19,8 @@ public class ResolverTest {
   private static final Resolver<PatternResolver.Wrapper> PATTERN_RESOLVER = new PatternResolver('<', '>')
     .withPlaceholder(new ApiPlaceholder(new JsoniterParser()))
     .withPlaceholder(new RandomPlaceholder())
-    .withPlaceholder(new RangePlaceholder());
+    .withPlaceholder(new RangePlaceholder())
+    .withPlaceholder(new AddressAlivePlaceholder());
 
   @Test
   void pattern_api() {
@@ -59,6 +61,20 @@ public class ResolverTest {
     // response
     final long start = System.nanoTime();
     final String response = PATTERN_RESOLVER.resolve(query, new Class<?>[]{ RandomPlaceholder.class });
+    final long end = System.nanoTime();
+
+    // result
+    System.out.printf("%s (%sns)%n", response, end - start);
+  }
+
+  @Test
+  void pattern_address_alive() {
+    // query
+    final String query = "is address alive = <address_alive(127.0.0.1,4000,yes,no)>";
+
+    // response
+    final long start = System.nanoTime();
+    final String response = PATTERN_RESOLVER.resolve(query, new Class<?>[]{ AddressAlivePlaceholder.class });
     final long end = System.nanoTime();
 
     // result

@@ -3,7 +3,6 @@ package xyz.oliwer.placeholder.parser;
 import xyz.oliwer.placeholder.Placeholder;
 import xyz.oliwer.placeholder.data.DefaultData;
 
-import java.util.Collection;
 import java.util.regex.Pattern;
 
 import static java.lang.String.format;
@@ -74,7 +73,7 @@ public final class PatternResolver extends Resolver<PatternResolver.Wrapper> {
    **/
   @Override
   public String resolve(String origin, Object customData) {
-    final Collection<Wrapper> values = placeholders.values();
+    final var values = placeholders.values();
     for (final Wrapper wrapper : values)
       origin = this.handle(wrapper, origin, customData);
     return origin;
@@ -106,7 +105,7 @@ public final class PatternResolver extends Resolver<PatternResolver.Wrapper> {
       return origin;
 
     // necessity
-    final Placeholder parent = wrapper.parent;
+    final var parent = wrapper.parent;
 
     // parse
     return wrapper
