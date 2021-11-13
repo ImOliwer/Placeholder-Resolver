@@ -17,10 +17,7 @@ import static xyz.oliwer.placeholder.Placeholder.Resolver;
 @TestInstance(Lifecycle.PER_CLASS)
 public class ResolverTest {
   private static final Resolver<PatternResolver.Wrapper> PATTERN_RESOLVER = new PatternResolver('<', '>')
-    .withPlaceholder(new ApiPlaceholder(new JsoniterParser()))
-    .withPlaceholder(new RandomPlaceholder())
-    .withPlaceholder(new RangePlaceholder())
-    .withPlaceholder(new AddressAlivePlaceholder());
+    .withDefault(new JsoniterParser());
 
   @Test
   void pattern_api() {

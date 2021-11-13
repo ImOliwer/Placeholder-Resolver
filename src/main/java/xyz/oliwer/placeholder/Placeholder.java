@@ -1,6 +1,11 @@
 package xyz.oliwer.placeholder;
 
 import xyz.oliwer.placeholder.data.DefaultData;
+import xyz.oliwer.placeholder.def.AddressAlivePlaceholder;
+import xyz.oliwer.placeholder.def.ApiPlaceholder;
+import xyz.oliwer.placeholder.def.RandomPlaceholder;
+import xyz.oliwer.placeholder.def.RangePlaceholder;
+import xyz.oliwer.placeholder.json.JsonParser;
 import xyz.oliwer.placeholder.parser.PatternResolver;
 
 import java.util.Map;
@@ -69,6 +74,20 @@ public interface Placeholder {
      * @return {@link Resolver} current instance.
      */
     public abstract <P extends Placeholder> Resolver<W> withPlaceholder(P placeholder);
+
+    /**
+     * Register the default placeholders to this resolver.
+     *
+     * @param jsonParser {@link JsonParser} the json parser instance to use.
+     * @return {@link Resolver} current instance.
+     */
+    public final Resolver<W> withDefault(JsonParser jsonParser) {
+      withPlaceholder(new RangePlaceholder());
+      withPlaceholder(new RandomPlaceholder());
+      withPlaceholder(new ApiPlaceholder(jsonParser));
+      withPlaceholder(new AddressAlivePlaceholder());
+      return this;
+    }
 
     /**
      * Resolve the placeholders inside the origin passed.
